@@ -22,6 +22,10 @@ class TomBot(PokerBot):
   def make_decision(self):
     #
     ########## COVER EXCEPTIONS ##########
+    # cover self.game not being set
+    if (self.game is None):
+      raise Exception( \
+        "TexasHoldEm object not set, call set_game() method first")
     # cover self.game not having hand running
     if (not (self.game.is_game_running() and self.game.is_hand_running())):
       raise Exception("TexasHoldEm object does not have hand running")
