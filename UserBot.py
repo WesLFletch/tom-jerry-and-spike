@@ -18,6 +18,10 @@ class UserBot(PokerBot):
   def make_decision(self):
     #
     ########## COVER EXCEPTIONS ##########
+    # cover self.game not being set
+    if (self.game is None):
+      raise Exception( \
+        "TexasHoldEm object not set, call set_game() method first")
     # cover self.game not having hand running
     if (not (self.game.is_game_running() and self.game.is_hand_running())):
       raise Exception("TexasHoldEm object does not have hand running")
@@ -27,7 +31,7 @@ class UserBot(PokerBot):
         f"TomBot (player {self.player_num}) called to play out of turn order " \
           f"(it is player {self.game.current_player}'s turn)")
     #
-    ########## MAKE DECISION ##########
+    ########## PROMPT USER TO MAKE DECISION ##########
     # show user game state information and prompt to input decision
     opponent_chips = []
     for i in range(self.game.max_players):
@@ -41,9 +45,11 @@ class UserBot(PokerBot):
     print(f"Your Cards: {self.game.get_hand(self.player_num)}")
     print(f"Community Cards: {self.game.board}")
     user_decision = str(input("What will you do (c/r/f/a)?:"))
-    # try to make user_decision
+    #
+    ########## TRY TO MAKE USER DECISION ##########
+    # branch on user decision
     if (user_decision == "c"):
-      # try to call/check
+      ##### TRY TO CALL/CHECK #####
       if (self.game.validate_move(action = ActionType.CALL)):
         self.game.take_action(ActionType.CALL)
         return None
@@ -53,7 +59,7 @@ class UserBot(PokerBot):
       else:
         raise Exception("illegal decision made")
     elif (user_decision == "r"):
-      # try to raise
+      ##### TRY TO RAISE #####
       user_raise_amount = int(input("How much to raise by?:"))
       if (self.game.validate_move(action = ActionType.RAISE,
                                   value = user_raise_amount)):
@@ -62,14 +68,14 @@ class UserBot(PokerBot):
       else:
         raise Exception("illegal decision made")
     elif (user_decision == "f"):
-      # try to fold
+      ##### TRY TO FOLD #####
       if (self.game.validate_move(action = ActionType.FOLD)):
         self.game.take_action(ActionType.FOLD)
         return None
       else:
         raise Exception("illegal decision made")
     elif (user_decision == "a"):
-      # try to go all in
+      ##### TRY TO GO ALL IN #####
       if (self.game.validate_move(action = ActionType.ALL_IN)):
         self.game.take_action(ActionType.ALL_IN)
         return None

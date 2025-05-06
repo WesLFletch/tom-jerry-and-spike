@@ -7,11 +7,8 @@ from texasholdem import TexasHoldEm
 # operate off subclasses of this parent class (hopefully) and we can have a
 # standardized and modular way to implement our other bots.
 class PokerBot(ABC):
-  def __init__(self, game:TexasHoldEm, player_num:int):
-    if (player_num + 1 > game.max_players):
-      raise ValueError("argument player_num too large for game")
-    self.game = game
-    self.player_num = player_num
+  def __init__(self):
+    pass
   
   # sets the match that the bot is playing, as well as which player number it
   # is. allows bots to switch what game they're playing in, or switch which
@@ -27,10 +24,17 @@ class PokerBot(ABC):
   
   # shorthand helper function to get the bot's chips for those curious users
   def get_num_chips(self):
+    # cover game not set
+    if (self.game is None):
+      raise Exception( \
+        "TexasHoldEm object not set, call set_game() method first")
     return self.game.players[self.player_num].chips
   
   # shorthand helper function to get the bot's cards for those curious users
   def get_cards(self):
+    # cover game not set
+    if (self.game is None):
+      raise Exception("game member not set, call set_game() method first")
     return self.game.get_hand(self.player_num)
   
   # returns the bot's parameters, so that saving is more efficient. must be
