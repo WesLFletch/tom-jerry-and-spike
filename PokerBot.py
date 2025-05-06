@@ -9,14 +9,33 @@ from texasholdem import TexasHoldEm
 class PokerBot(ABC):
   def __init__(self):
     pass
+
+  # helper function that should be called by child classes before performing
+  # methods that relying upon having a game object loaded. returns nothing,
+  # raises exception if game object is not loaded.
+  def _check_integrity_(self):
+    # cover self.game not being set
+    if (self.game is None):
+      raise Exception( \
+        "TexasHoldEm object not set, call set_game() method first")
+    # cover self.game not having hand running
+    if (not (self.game.is_game_running() and self.game.is_hand_running())):
+      raise Exception( \
+        f"player {self.player_num}'s game object does not have hand running")
+    # cover being called to make decision when not bot's turn
+    if (self.game.current_player != self.player_num):
+      raise Exception(\
+        f"player {self.player_num} called to play out of turn order (it is " \
+          f"player {self.game.current_player}'s turn)")
+    return None
   
   # sets the match that the bot is playing, as well as which player number it
   # is. allows bots to switch what game they're playing in, or switch which
   # player number they are.
   def set_game(self, game:TexasHoldEm, player_num:int):
-    # cover player_num too large
-    if (player_num + 1 > game.max_players):
-      raise ValueError("argument player_num too large for game")
+    # cover player_num too large or too small
+    if (player_num + 1 > game.max_players or player_num < 0):
+      raise ValueError("argument player_num not applicable for game")
     # set game and player num
     self.game = game
     self.player_num = player_num
@@ -24,7 +43,7 @@ class PokerBot(ABC):
   
   # shorthand helper function to get the bot's chips for those curious users
   def get_num_chips(self):
-    # cover game not set
+    # cover self.game not being set
     if (self.game is None):
       raise Exception( \
         "TexasHoldEm object not set, call set_game() method first")
@@ -32,9 +51,10 @@ class PokerBot(ABC):
   
   # shorthand helper function to get the bot's cards for those curious users
   def get_cards(self):
-    # cover game not set
+    # cover self.game not being set
     if (self.game is None):
-      raise Exception("game member not set, call set_game() method first")
+      raise Exception( \
+        "TexasHoldEm object not set, call set_game() method first")
     return self.game.get_hand(self.player_num)
   
   # returns the bot's parameters, so that saving is more efficient. must be

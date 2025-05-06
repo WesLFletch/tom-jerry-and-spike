@@ -18,18 +18,7 @@ class UserBot(PokerBot):
   def make_decision(self):
     #
     ########## COVER EXCEPTIONS ##########
-    # cover self.game not being set
-    if (self.game is None):
-      raise Exception( \
-        "TexasHoldEm object not set, call set_game() method first")
-    # cover self.game not having hand running
-    if (not (self.game.is_game_running() and self.game.is_hand_running())):
-      raise Exception("TexasHoldEm object does not have hand running")
-    # cover being called to make decision when not TomBot's turn
-    if (self.game.current_player != self.player_num):
-      raise Exception(\
-        f"TomBot (player {self.player_num}) called to play out of turn order " \
-          f"(it is player {self.game.current_player}'s turn)")
+    self._check_integrity_()
     #
     ########## PROMPT USER TO MAKE DECISION ##########
     # show user game state information and prompt to input decision
