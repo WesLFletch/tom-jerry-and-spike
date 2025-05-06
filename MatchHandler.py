@@ -40,10 +40,6 @@ class MatchHandler:
     #
     ########## RUN THE ROUND ##########
     self.game.start_hand()
-    # return early if match has ended (last round decided the match winner)
-    if (not self.game.is_game_running()):
-      return None
-    # otherwise, run the round like normal
     while (self.game.is_hand_running()):
       self.bots[self.game.current_player].make_decision()
     return None
