@@ -1,5 +1,5 @@
 from texasholdem import ActionType
-import random
+from random import random, randint
 from PokerBot import PokerBot
 
 ############################# TOM CLASS DEFINITION #############################
@@ -17,16 +17,20 @@ class TomBot(PokerBot):
   # set the bot's parameters, useful for loading
   def set_parameters(self): # TomBot has no parameters to set
     pass
+
+  # receives "round end" flag passed by MatchHandler
+  def _round_end(self):
+    pass # TomBot has no "round end" operations to perform
   
   # make a decision in the current game as the assigned player number
   def make_decision(self):
     #
     ########## COVER EXCEPTIONS ##########
-    self._check_integrity_()
+    self._check_integrity()
     #
     ########## MAKE DECISION ##########
     # flip coin to determine decision
-    if (random.random() > 0.5):
+    if (random() > 0.5):
       ##### TRY TO RAISE #####
       min_raise = self.game.get_available_moves().raise_range.start
       max_raise = min(10 + self.game.get_available_moves().raise_range.start,
@@ -42,7 +46,7 @@ class TomBot(PokerBot):
           self.game.take_action(ActionType.CHECK)
           return None
       # if we get here, we can raise normally
-      raise_amount = random.randint(min_raise, max_raise)
+      raise_amount = randint(min_raise, max_raise)
       # ensure raise is valid (should always be true)
       if (self.game.validate_move(action = ActionType.RAISE,
                                   value = raise_amount)):

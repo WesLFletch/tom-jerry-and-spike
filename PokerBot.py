@@ -13,7 +13,7 @@ class PokerBot(ABC):
   # helper function that should be called by child classes before performing
   # methods that relying upon having a game object loaded. returns nothing,
   # raises exception if game object is not loaded.
-  def _check_integrity_(self):
+  def _check_integrity(self):
     # cover self.game not being set
     if (self.game is None):
       raise Exception( \
@@ -67,6 +67,12 @@ class PokerBot(ABC):
   # implemented by child classes.
   @abstractmethod
   def set_parameters(self):
+    pass
+
+  # receives "round end" flag passed by MatchHandler to perform end-of-round
+  # updates, if needed. must be implemented by child classes.
+  @abstractmethod
+  def _round_end(self):
     pass
   
   # called to have the bot make a deision. must be implemented by child classes.

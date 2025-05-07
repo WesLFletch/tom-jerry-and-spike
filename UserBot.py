@@ -7,18 +7,22 @@ from PokerBot import PokerBot
 # allows real people to play against our agents in real matches.
 class UserBot(PokerBot):
   # get the bot's parameters, useful for saving
-  def get_parameters(self): # User Bot has no parameters to get
+  def get_parameters(self): # UserBot has no parameters to get
     pass
   
   # set the bot's parameters, useful for loading
-  def set_parameters(self): # User Bot has no parameters to set
+  def set_parameters(self): # UserBot has no parameters to set
     pass
+
+  # receives "round end" flag passed by MatchHandler
+  def _round_end(self):
+    pass # UserBot has no "round end" operations to perform
 
   # prompt to user to make a decision
   def make_decision(self):
     #
     ########## COVER EXCEPTIONS ##########
-    self._check_integrity_()
+    self._check_integrity()
     #
     ########## PROMPT USER TO MAKE DECISION ##########
     # show user game state information and prompt to input decision
