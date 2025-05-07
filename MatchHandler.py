@@ -39,9 +39,13 @@ class MatchHandler:
                       "something went seriously wrong")
     #
     ########## RUN THE ROUND ##########
+    # start the hand and have each bot take its turn until the round ends
     self.game.start_hand()
     while (self.game.is_hand_running()):
       self.bots[self.game.current_player].make_decision()
+    # now that the round has ended, send all bots the "round end" flag
+    for bot in self.bots:
+      bot._round_end()
     return None
   
   # create a TexasHoldEm object using arguments as match parameters, and run
