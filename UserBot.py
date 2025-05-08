@@ -14,8 +14,12 @@ class UserBot(PokerBot):
   def set_parameters(self): # UserBot has no parameters to set
     pass
 
+  # receives "round start" flag passed by MatchHandler
+  def _round_start(self, start_chips:int):
+    pass # UserBot has no "round start" operations to perform
+
   # receives "round end" flag passed by MatchHandler
-  def _round_end(self):
+  def _round_end(self, end_chips:int):
     pass # UserBot has no "round end" operations to perform
 
   # prompt to user to make a decision
