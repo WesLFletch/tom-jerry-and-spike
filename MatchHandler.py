@@ -39,13 +39,26 @@ class MatchHandler:
                       "something went seriously wrong")
     #
     ########## RUN THE ROUND ##########
-    # start the hand and have each bot take its turn until the round ends
+    # record the users' chips before round start (otherwise blinds are lost)
+    chips_before_round = [0] * self.num_bots
+    for i in range(self.num_bots):
+      chips_before_round[i] = self.game.players[i].chips
+    # start the hand
     self.game.start_hand()
+    # safeguard against the last round being the one that ended the match
+    if (not self.game.is_game_running()):
+      return None
+    # the round is now actually underway, send all bots the "round start" flag
+    # with the chips they had prior to the round
+    for bot in self.bots:
+      bot._round_start(chips_before_round[i])
+    # actually run through the round, bots make decisions until the round ends
     while (self.game.is_hand_running()):
       self.bots[self.game.current_player].make_decision()
-    # now that the round has ended, send all bots the "round end" flag
-    for bot in self.bots:
-      bot._round_end()
+    # now that the round has ended, send all bots the "round end" flag with the
+    # chips they have after the round ended
+    for i in range(self.num_bots):
+      self.bots[i]._round_end(self.game.players[i].chips)
     return None
   
   # create a TexasHoldEm object using arguments as match parameters, and run
