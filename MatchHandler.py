@@ -50,8 +50,8 @@ class MatchHandler:
       return None
     # the round is now actually underway, send all bots the "round start" flag
     # with the chips they had prior to the round
-    for bot in self.bots:
-      bot._round_start(chips_before_round[i])
+    for i in range(self.num_bots):
+      self.bots[i]._round_start(chips_before_round[i])
     # actually run through the round, bots make decisions until the round ends
     while (self.game.is_hand_running()):
       self.bots[self.game.current_player].make_decision()
