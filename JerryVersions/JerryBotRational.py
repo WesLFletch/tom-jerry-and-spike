@@ -1,9 +1,11 @@
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# look one directory up
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from texasholdem import ActionType, Card, PlayerState
 from texasholdem.evaluator import evaluate
 from PokerBot import PokerBot
+from JerryVersions.JerryHelpers import get_win_prob
 from numpy import ndarray, empty, zeros, arange, argsort, argmax, array, \
   append, copy, delete, mean, sum
 from numpy.random import choice, exponential
@@ -67,77 +69,6 @@ class JerryBotRational(PokerBot):
     self.r_m_mem = r_m_mem
     self.r_o_mem = r_o_mem
     return None
-  
-  # helper to convert Card to int for hand strength calculation
-  def _card_to_int(self, card:Card):
-    suit_dict = {1:0, 2:13, 4:26, 8:39}
-    return suit_dict[card.suit] + card.rank
-
-  # helper to convert int to Card for hand strength calculation
-  def _int_to_card(self, num:int):
-    rank_dict = {0:"2", 1:"3", 2:"4", 3:"5", 4:"6", 5:"7", 6:"8", 7:"9", 8:"T",
-                 9:"J", 10:"Q", 11:"K", 12:"A"}
-    suit_dict = {0:"s", 1:"h", 2:"d", 3:"c"}
-    return Card(rank_dict[num % 13] + suit_dict[num // 13])
-
-  # helper to get the value of the hand strength metric
-  def _get_hand_strength(self):
-    # initialize vector to hold bootstrap results
-    bootstrap_results = zeros(self.num_bootstraps)
-    # get bot's hand
-    my_hand = self.game.get_hand(self.player_num)
-    # perform the bootstrap loop
-    for i in range(self.num_bootstraps):
-      #
-      ########## BOOTSTRAP COMMUNITY CARDS ##########
-      # populate community cards with known community cards
-      comm_cards = []
-      for card in self.game.board:
-        comm_cards.append(card)
-      # populate known_cards with all known cards
-      known_cards = set()
-      for card in my_hand:
-        known_cards.add(self._card_to_int(card))
-      for card in comm_cards:
-        known_cards.add(self._card_to_int(card))
-      # populate remaining cards randomly
-      while (len(comm_cards) < 5):
-        while (True):
-          # the idea: generate a random card over and over until it's new
-          new_card = randint(0, 51)
-          if (known_cards.isdisjoint({new_card})):
-            known_cards.add(new_card)
-            comm_cards.append(self._int_to_card(new_card))
-            break
-      #
-      ########## BOOTSTRAP OPPONENT POCKETS ##########
-      # first, count the number of opponents who haven't folded
-      num_ops = int(-1) # starts here to remove ourselves from the count
-      for j in range(self.game.max_players):
-        if (not (self.game.players[j].state == PlayerState.OUT or
-                 self.game.players[j].state == PlayerState.SKIP)):
-          num_ops += 1
-      # next, populate their pockets
-      ops_pockets = [[]] * num_ops
-      for pocket in ops_pockets:
-        while (len(pocket) < 2):
-          # the idea: generate a random card over an over until it's new
-          while (True):
-            new_card = randint(0, 51)
-            if (known_cards.isdisjoint({new_card})):
-              known_cards.add(new_card)
-              pocket.append(self._int_to_card(new_card))
-              break
-      # determine hand ranks of all players
-      my_hand_rank = evaluate(my_hand, comm_cards)
-      ops_hand_ranks = [0] * num_ops
-      for j in range(num_ops):
-        ops_hand_ranks[j] = evaluate(ops_pockets[j], comm_cards)
-      # determine winner, update bootstrap_results
-      if (my_hand_rank < min(ops_hand_ranks)):
-        bootstrap_results[i] = 1
-    # calculate hand strength metric from the win probability
-    return mean(bootstrap_results) - (1/(num_ops+1))
   
   # helper to re-compute the decision boundaries
   def _update_bounds(self):
@@ -223,8 +154,15 @@ class JerryBotRational(PokerBot):
     self._check_integrity()
     #
     ########## MAKE DECISION ##########
-    # get hand evaluation metric irregardless
-    hand_strength = self._get_hand_strength()
+    # get hand evaluation metric irregardless of maturity
+    num_players_in = int(0)
+    for i in range(self.game.max_players):
+      if (not (self.game.players[i].state == PlayerState.OUT or
+               self.game.players[i].state == PlayerState.SKIP)):
+        num_players_in += 1
+    hand_strength = \
+      get_win_prob(self.game, self.player_num, self.num_bootstraps) - \
+        (1/num_players_in)
     # determine whether to make random decision or inteligent decision
     if (self.age >= self.maturity):
       #
