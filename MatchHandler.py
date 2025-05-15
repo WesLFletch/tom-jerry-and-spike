@@ -15,6 +15,9 @@ class MatchHandler:
     self.bots = bots
     self.num_bots = len(self.bots)
     self.match_histories = None # TODO: IMPLEMENT ME.
+    # send all bots a "new handler" flag
+    for i in range(self.num_bots):
+      self.bots[i].new_handler(self.num_bots, i)
   
   # create a TexasHoldEm object using arguments as match parameters and assign
   # all bots to the match. only useful in conjunction with run_round() method
@@ -51,14 +54,14 @@ class MatchHandler:
     # the round is now actually underway, send all bots the "round start" flag
     # with the chips they had prior to the round
     for i in range(self.num_bots):
-      self.bots[i]._round_start(chips_before_round[i])
+      self.bots[i].round_start(chips_before_round[i])
     # actually run through the round, bots make decisions until the round ends
     while (self.game.is_hand_running()):
       self.bots[self.game.current_player].make_decision()
     # now that the round has ended, send all bots the "round end" flag with the
     # chips they have after the round ended
     for i in range(self.num_bots):
-      self.bots[i]._round_end(self.game.players[i].chips)
+      self.bots[i].round_end(self.game.players[i].chips)
     return None
   
   # create a TexasHoldEm object using arguments as match parameters, and run

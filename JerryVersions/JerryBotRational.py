@@ -2,12 +2,11 @@ import sys
 import os
 # look one directory up
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from texasholdem import ActionType, Card, PlayerState
-from texasholdem.evaluator import evaluate
+from texasholdem import ActionType, PlayerState
 from PokerBot import PokerBot
 from JerryVersions.JerryHelpers import get_win_prob
-from numpy import ndarray, empty, zeros, arange, argsort, argmax, array, \
-  append, copy, delete, mean, sum
+from numpy import ndarray, empty, arange, argsort, argmax, array, append, \
+  copy, delete, sum
 from numpy.random import choice, exponential
 from random import randint
 
@@ -128,8 +127,12 @@ class JerryBotRational(PokerBot):
       self.r_o_mem = delete(self.r_o_mem, idxs_to_remove)
     return None
 
+  # receives "new handler" flag passed by MatchHandler
+  def new_handler(self, table_size:int, player_num:int):
+    pass # JerryBotRational has no "new handler" operations to perform
+
   # receives "round start" flag passed by MatchHandler
-  def _round_start(self, start_chips:int):
+  def round_start(self, start_chips:int):
     # record number of chips from before the round
     self.start_chips = start_chips
     # recompute decision boundaries, if needed
@@ -137,7 +140,7 @@ class JerryBotRational(PokerBot):
       self._update_bounds()
 
   # receives "round end" flag passed by MatchHandler
-  def _round_end(self, end_chips:int):
+  def round_end(self, end_chips:int):
     # add round data into long-term memory with associated outcome
     if (self.adaptive):
       self._log_memory(end_chips - self.start_chips)

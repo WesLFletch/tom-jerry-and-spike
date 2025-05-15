@@ -69,16 +69,22 @@ class PokerBot(ABC):
   def set_parameters(self):
     pass
 
+  # receives "new handler" flag passed by MatchHandler to perform updates, if
+  # needed. must be implemented by child classes.
+  @abstractmethod
+  def new_handler(self, table_size:int, player_num:int):
+    pass
+
   # receives "round start" flag passed by MatchHandler to perform start-of-round
   # updates, if needed. must be implemented by child classes.
   @abstractmethod
-  def _round_start(self, start_chips:int):
+  def round_start(self, start_chips:int):
     pass
 
   # receives "round end" flag passed by MatchHandler to perform end-of-round
   # updates, if needed. must be implemented by child classes.
   @abstractmethod
-  def _round_end(self, end_chips:int):
+  def round_end(self, end_chips:int):
     pass
   
   # called to have the bot make a deision. must be implemented by child classes.
