@@ -180,9 +180,9 @@ class JerryBotRational(PokerBot):
           return None
         else:
           # cover when folding is invalid (this should be impossible)
-          raise Exception("JerryBot's attempted fold is invalid (this should" \
-                          " be impossible, if you're seeing this, something " \
-                            "went seriously wrong)")
+          raise Exception("JerryBotRational's attempted fold is invalid " \
+                          "(this should be impossible, if you're seeing " \
+                            "this, something went seriously wrong)")
       elif (hand_strength + bias < self.b2):
         ##### TRY TO CALL/CHECK #####
         if (self.game.validate_move(action = ActionType.CALL)):
@@ -197,9 +197,9 @@ class JerryBotRational(PokerBot):
           return None
         else:
           # cover when neither are allowed (should be impossible)
-          raise Exception("JerryBot is trying to call or check but cannot " \
-                          "(this should be impossible, if you're seeing " \
-                            "this, something went seriously wrong)")
+          raise Exception("JerryBotRational is trying to call or check but " \
+                          "cannot (this should be impossible, if you're " \
+                            "seeing this, something went seriously wrong)")
       else:
         ##### TRY TO RAISE #####
         min_raise = self.game.get_available_moves().raise_range.start
@@ -230,9 +230,9 @@ class JerryBotRational(PokerBot):
           return None
         else:
           # cover when attempted raise is invalid (should be impossible)
-          raise Exception("JerryBot's attempted raise is invalid (this should" \
-                          " be impossible, if you're seeing this, something " \
-                            "went seriously wrong)")
+          raise Exception("JerryBotRational's attempted raise is invalid " \
+                          "(this should be impossible, if you're seeing " \
+                            "this, something went seriously wrong)")
     else:
       #
       ########## MAKE "RANDOM" DECISION (COPIED FROM TOMBOT) ##########
@@ -267,9 +267,9 @@ class JerryBotRational(PokerBot):
           return None
         else:
           # cover when attempted raise is invalid (should be impossible)
-          raise Exception("JerryBot's attempted raise is invalid (this should" \
-                          " be impossible, if you're seeing this, something " \
-                            "went seriously wrong)")
+          raise Exception("JerryBotRational's attempted raise is invalid " \
+                          "(this should be impossible, if you're seeing " \
+                            "this, something went seriously wrong)")
       else:
         ##### TRY TO CALL/CHECK #####
         if (self.game.validate_move(action = ActionType.CALL)):
@@ -284,6 +284,6 @@ class JerryBotRational(PokerBot):
           return None
         else:
           # cover when neither are allowed (should be impossible)
-          raise Exception("JerryBot is trying to call or check but cannot " \
-                          "(this should be impossible, if you're seeing " \
-                            "this, something went seriously wrong)")
+          raise Exception("JerryBotRational is trying to call or check but " \
+                          "cannot (this should be impossible, if you're " \
+                            "seeing this, something went seriously wrong)")
