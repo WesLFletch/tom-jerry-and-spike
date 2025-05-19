@@ -15,8 +15,13 @@ We have employed (INSERT STUFF THAT WE'VE USED HERE). All of these resources hav
 
 ## Quick Start Guide:
 
-FILL ME IN LATER.
+### Terminology
+Round - each specific hand phase, i.e., pre-flop, flop, turn, or river.
+Hand - collection of rounds until either a showdown, or all but one person has folded.
+Match - a collection of hands that results in one person having all the money and everyone else, unless otherwise specified.
+Game - an instance of a match in progress
 
 ## References
 
 PUT SOME CITATIONS HERE, AND ALSO REFER TO OUR ACCOMPANYING DOCUMENTATION ON ALGORITHMS AND WHATNOT.
+
