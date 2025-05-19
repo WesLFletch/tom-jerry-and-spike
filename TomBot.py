@@ -19,16 +19,16 @@ class TomBot(PokerBot):
     pass
 
   # receives "new handler" flag passed by MatchHandler
-  def new_handler(self, table_size:int, player_num:int):
+  def new_handler(self):
     pass # TomBot has no "new handler" operations to perform
 
-  # receives "round start" flag passed by MatchHandler
-  def round_start(self, start_chips:int):
-    pass # TomBot has no "round start" operations to perform
+  # receives "hand start" flag passed by MatchHandler
+  def hand_start(self):
+    pass # TomBot has no "hand start" operations to perform
 
-  # receives "round end" flag passed by MatchHandler
-  def round_end(self, end_chips:int):
-    pass # TomBot has no "round end" operations to perform
+  # receives "hand end" flag passed by MatchHandler
+  def hand_end(self):
+    pass # TomBot has no "hand end" operations to perform
   
   # make a decision in the current game as the assigned player number
   def make_decision(self):

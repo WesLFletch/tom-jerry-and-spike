@@ -17,20 +17,20 @@ class MatchHandler:
     self.match_histories = None # TODO: IMPLEMENT ME.
     # send all bots a "new handler" flag
     for i in range(self.num_bots):
-      self.bots[i].new_handler(self.num_bots, i)
+      self.bots[i].new_handler()
   
   # create a TexasHoldEm object using arguments as match parameters and assign
-  # all bots to the match. only useful in conjunction with run_round() method
+  # all bots to the match. only useful in conjunction with run_hand() method
   # for step-by-step matches or when called internally by run_match() method.
   def start_game(self, buyin:int, big_blind:int, small_blind:int):
     self.game = TexasHoldEm(buyin, big_blind, small_blind, self.num_bots)
     for i in range(self.num_bots):
       self.bots[i].set_game(self.game, i)
   
-  # run through a single round of play in the current match, if it exists and
+  # run through a single hand of play in the current match, if it exists and
   # hasn't already ended. can only be used after calling start_game() method,
   # or when called internally by run_match() method.
-  def run_round(self):
+  def run_hand(self):
     #
     ########## COVER EXCEPTIONS ##########
     if (self.game is None):
@@ -41,27 +41,21 @@ class MatchHandler:
       raise Exception("there is a hand already running, if you see this, " \
                       "something went seriously wrong")
     #
-    ########## RUN THE ROUND ##########
-    # record the users' chips before round start (otherwise blinds are lost)
-    chips_before_round = [0] * self.num_bots
-    for i in range(self.num_bots):
-      chips_before_round[i] = self.game.players[i].chips
+    ########## RUN THE HAND ##########
     # start the hand
     self.game.start_hand()
-    # safeguard against the last round being the one that ended the match
+    # safeguard against the last hand being the one that ended the match
     if (not self.game.is_game_running()):
       return None
-    # the round is now actually underway, send all bots the "round start" flag
-    # with the chips they had prior to the round
+    # the hand is now actually underway, send all bots the "hand start" flag
     for i in range(self.num_bots):
-      self.bots[i].round_start(chips_before_round[i])
-    # actually run through the round, bots make decisions until the round ends
+      self.bots[i].hand_start()
+    # actually run through the hand, bots make decisions until the hand ends
     while (self.game.is_hand_running()):
       self.bots[self.game.current_player].make_decision()
-    # now that the round has ended, send all bots the "round end" flag with the
-    # chips they have after the round ended
+    # now that the hand has ended, send all bots the "hand end" flag
     for i in range(self.num_bots):
-      self.bots[i].round_end(self.game.players[i].chips)
+      self.bots[i].hand_end()
     return None
   
   # create a TexasHoldEm object using arguments as match parameters, and run
@@ -72,9 +66,9 @@ class MatchHandler:
                 record_history:bool = False):
     # instanciate game and assign all bots to the game
     self.start_game(buyin, big_blind, small_blind)
-    # run rounds until match ends
+    # run hands until match ends
     while (self.game.is_game_running()):
-      self.run_round()
+      self.run_hand()
     return None
   
   # perform run_match num_matches times. records the match history if desired.

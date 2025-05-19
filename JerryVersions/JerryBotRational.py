@@ -24,7 +24,7 @@ class JerryBotRational(PokerBot):
     #
     ########## LONG TERM PARAMETERS ##########
     self.adaptive = adaptive  # whether to recompute bounds and update memory
-    self.maturity = maturity  # how many rounds before decisions aren't random
+    self.maturity = maturity  # how many hands before decisions aren't random
     self.max_memory = max_memory    # maximum number of rows in ..._mem arrays
     self.rationality = rationality  # tuning parameter for noise in decisions
     self.num_bootstraps = num_bootstraps  # for hand strength estimation
@@ -34,12 +34,12 @@ class JerryBotRational(PokerBot):
     self.r_o_mem = empty(0, dtype = int)    # raise outcome memory
     self.b1 = float(0.0)  # the metric bound between fold and call/check
     self.b2 = float(0.0)  # the metric bound between call/check and raise
-    self.age = int(0) # how many rounds the bot has played, determines maturity
+    self.age = int(0) # how many hands the bot has played, determines maturity
     #
     ########## SHORT TERM MEMORY ##########
     self.c_m_rec = empty(0, dtype = float)  # call/check metric recents
     self.r_m_rec = empty(0, dtype = float)  # raise metric recents
-    self.start_chips = int(0) # will hold num chips before each round start
+    self.start_chips = int(0) # will hold num chips before each hand start
   
   # get the bot's parameters, useful for saving
   def get_parameters(self):
@@ -128,22 +128,23 @@ class JerryBotRational(PokerBot):
     return None
 
   # receives "new handler" flag passed by MatchHandler
-  def new_handler(self, table_size:int, player_num:int):
+  def new_handler(self):
     pass # JerryBotRational has no "new handler" operations to perform
 
-  # receives "round start" flag passed by MatchHandler
-  def round_start(self, start_chips:int):
-    # record number of chips from before the round
-    self.start_chips = start_chips
+  # receives "hand start" flag passed by MatchHandler
+  def hand_start(self):
+    # record number of chips from before the hand
+    self.start_chips = self.game.players[self.player_num].chips
     # recompute decision boundaries, if needed
     if (self.adaptive and self.age >= self.maturity):
       self._update_bounds()
 
-  # receives "round end" flag passed by MatchHandler
-  def round_end(self, end_chips:int):
-    # add round data into long-term memory with associated outcome
+  # receives "hand end" flag passed by MatchHandler
+  def hand_end(self):
+    # add hand data into long-term memory with associated outcome
     if (self.adaptive):
-      self._log_memory(end_chips - self.start_chips)
+      self._log_memory(self.game.players[self.player_num].chips - \
+                       self.start_chips)
     # reset short-term memory
     self.c_m_rec = empty(0, dtype = float)
     self.r_m_rec = empty(0, dtype = float)
@@ -180,9 +181,9 @@ class JerryBotRational(PokerBot):
           return None
         else:
           # cover when folding is invalid (this should be impossible)
-          raise Exception("JerryBot's attempted fold is invalid (this should" \
-                          " be impossible, if you're seeing this, something " \
-                            "went seriously wrong)")
+          raise Exception("JerryBotRational's attempted fold is invalid " \
+                          "(this should be impossible, if you're seeing " \
+                            "this, something went seriously wrong)")
       elif (hand_strength + bias < self.b2):
         ##### TRY TO CALL/CHECK #####
         if (self.game.validate_move(action = ActionType.CALL)):
@@ -197,9 +198,9 @@ class JerryBotRational(PokerBot):
           return None
         else:
           # cover when neither are allowed (should be impossible)
-          raise Exception("JerryBot is trying to call or check but cannot " \
-                          "(this should be impossible, if you're seeing " \
-                            "this, something went seriously wrong)")
+          raise Exception("JerryBotRational is trying to call or check but " \
+                          "cannot (this should be impossible, if you're " \
+                            "seeing this, something went seriously wrong)")
       else:
         ##### TRY TO RAISE #####
         min_raise = self.game.get_available_moves().raise_range.start
@@ -230,9 +231,9 @@ class JerryBotRational(PokerBot):
           return None
         else:
           # cover when attempted raise is invalid (should be impossible)
-          raise Exception("JerryBot's attempted raise is invalid (this should" \
-                          " be impossible, if you're seeing this, something " \
-                            "went seriously wrong)")
+          raise Exception("JerryBotRational's attempted raise is invalid " \
+                          "(this should be impossible, if you're seeing " \
+                            "this, something went seriously wrong)")
     else:
       #
       ########## MAKE "RANDOM" DECISION (COPIED FROM TOMBOT) ##########
@@ -267,9 +268,9 @@ class JerryBotRational(PokerBot):
           return None
         else:
           # cover when attempted raise is invalid (should be impossible)
-          raise Exception("JerryBot's attempted raise is invalid (this should" \
-                          " be impossible, if you're seeing this, something " \
-                            "went seriously wrong)")
+          raise Exception("JerryBotRational's attempted raise is invalid " \
+                          "(this should be impossible, if you're seeing " \
+                            "this, something went seriously wrong)")
       else:
         ##### TRY TO CALL/CHECK #####
         if (self.game.validate_move(action = ActionType.CALL)):
@@ -284,6 +285,6 @@ class JerryBotRational(PokerBot):
           return None
         else:
           # cover when neither are allowed (should be impossible)
-          raise Exception("JerryBot is trying to call or check but cannot " \
-                          "(this should be impossible, if you're seeing " \
-                            "this, something went seriously wrong)")
+          raise Exception("JerryBotRational is trying to call or check but " \
+                          "cannot (this should be impossible, if you're " \
+                            "seeing this, something went seriously wrong)")

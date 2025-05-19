@@ -15,16 +15,16 @@ class UserBot(PokerBot):
     pass
 
   # receives "new handler" flag passed by MatchHandler
-  def new_handler(self, table_size:int, player_num:int):
+  def new_handler(self):
     pass # UserBot has no "new handler" operations to perform
 
-  # receives "round start" flag passed by MatchHandler
-  def round_start(self, start_chips:int):
-    pass # UserBot has no "round start" operations to perform
+  # receives "hand start" flag passed by MatchHandler
+  def hand_start(self):
+    pass # UserBot has no "hand start" operations to perform
 
-  # receives "round end" flag passed by MatchHandler
-  def round_end(self, end_chips:int):
-    pass # UserBot has no "round end" operations to perform
+  # receives "hand end" flag passed by MatchHandler
+  def hand_end(self):
+    pass # UserBot has no "hand end" operations to perform
 
   # prompt to user to make a decision
   def make_decision(self):
