@@ -174,6 +174,12 @@ class JerryBotRational(PokerBot):
       # add some rightwards bias so leftward movement of bounds is possible
       bias = exponential(1/self.rationality)
       if (hand_strength + bias < self.b1):
+        ##### TRY TO CHECK #####
+        if (self.game.validate_move(action = ActionType.CHECK)):
+          # record decision, perform check, and return
+          self.c_m_rec = append(self.c_m_rec, [hand_strength])
+          self.game.take_action(ActionType.CHECK)
+          return None
         ##### TRY TO FOLD #####
         if (self.game.validate_move(action = ActionType.FOLD)):
           # perform fold and return
