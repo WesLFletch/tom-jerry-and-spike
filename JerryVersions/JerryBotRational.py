@@ -5,10 +5,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from texasholdem import ActionType, PlayerState
 from PokerBot import PokerBot
 from JerryVersions.JerryHelpers import get_win_prob
+from copy import deepcopy
 from numpy import ndarray, empty, arange, argsort, argmax, array, append, \
   copy, delete, sum
 from numpy.random import choice, exponential
 from random import randint
+from typing import Optional, Sequence
 
 ######################## RATIONAL JERRY CLASS DEFINITION #######################
 
@@ -41,32 +43,75 @@ class JerryBotRational(PokerBot):
     self.r_m_rec = empty(0, dtype = float)  # raise metric recents
     self.start_chips = int(0) # will hold num chips before each hand start
   
-  # get the bot's parameters, useful for saving
-  def get_parameters(self):
-    return (self.b1, self.b2, self.adaptive, self.age, self.maturity,
-            self.max_memory, self.rationality, self.num_bootstraps,
-            self.c_m_mem, self.c_o_mem, self.r_m_mem, self.r_o_mem)
+  # return a deep copy of the bot's parameters corresponding to the parameter
+  # names passed in `params` argument
+  def get_parameters(self, params:Sequence[str] = []):
+    # matches names to params
+    names_to_params = {"b1":self.b1, "b2":self.b2, "adaptive":self.adaptive,
+                       "age":self.age, "maturity":self.maturity,
+                       "max memory":self.max_memory,
+                       "rationality":self.rationality,
+                       "num boostraps":self.num_bootstraps,
+                       "call/check metric mem":self.c_m_mem,
+                       "call/check outcome mem":self.c_o_mem,
+                       "raise metric mem":self.r_m_mem,
+                       "raise outcome mem":self.r_o_mem}
+    # cover singleton list, return one element
+    if (len(params) == 1):
+      if ({params[0]}.isdisjoint(names_to_params.keys())):
+        raise ValueError(f"JerryBotRational has no parameter \"{params[0]}\"")
+      return deepcopy(names_to_params[params[0]])
+    # cover empty list, return all
+    if (len(params) == 0):
+      params = ["b1", "b2", "adaptive", "age", "maturity", "max memory",
+                "rationality", "num boostraps", "call/check metric mem",
+                "call/check outcome mem", "raise metric mem",
+                "raise outcome mem"]
+    # initialize returned collection
+    output = ()
+    # iterate through params, add elements to output
+    for param in params:
+      if ({param}.isdisjoint(names_to_params.keys())):
+        raise ValueError(f"JerryBotRational has no parameter \"{param}\"")
+      output = output + (names_to_params[param],)
+    # return deep copy of output
+    return deepcopy(output)
   
-  # set the bot's parameters, useful for loading
-  def set_parameters(self, b1:float = 0.0, b2:float = 0.0, adaptive:bool = True,
-                     age:int = 0, maturity:int = 1000, max_memory:int = 10000,
-                     rationality:float = 20.0, num_bootstraps:int = 1000,
-                     c_m_mem:ndarray = empty(0, dtype = float),
-                     c_o_mem:ndarray = empty(0, dtype = int),
-                     r_m_mem:ndarray = empty(0, dtype = float),
-                     r_o_mem:ndarray = empty(0, dtype = int)):
-    self.b1 = b1
-    self.b2 = b2
-    self.adaptive = adaptive
-    self.age = age
-    self.maturity = maturity
-    self.max_memory = max_memory
-    self.rationality = rationality
-    self.num_bootstraps = num_bootstraps
-    self.c_m_mem = c_m_mem
-    self.c_o_mem = c_o_mem
-    self.r_m_mem = r_m_mem
-    self.r_o_mem = r_o_mem
+  # set the bot's parameters
+  def set_parameters(self, b1:Optional[float] = None, b2:Optional[float] = None,
+                     adaptive:Optional[bool] = None, age:Optional[int] = None,
+                     maturity:Optional[int] = None,
+                     max_memory:Optional[int] = None,
+                     rationality:Optional[float] = None,
+                     num_bootstraps:Optional[int] = None,
+                     c_m_mem:Optional[ndarray] = None,
+                     c_o_mem:Optional[ndarray] = None,
+                     r_m_mem:Optional[ndarray] = None,
+                     r_o_mem:Optional[ndarray] = None):
+    if b1 is not None:
+      self.b1 = b1
+    if b2 is not None:
+      self.b2 = b2
+    if adaptive is not None:
+      self.adaptive = adaptive
+    if age is not None:
+      self.age = age
+    if maturity is not None:
+      self.maturity = maturity
+    if max_memory is not None:
+      self.max_memory = max_memory
+    if rationality is not None:
+      self.rationality = rationality
+    if num_bootstraps is not None:
+      self.num_bootstraps = num_bootstraps
+    if c_m_mem is not None:
+      self.c_m_mem = c_m_mem
+    if c_o_mem is not None:
+      self.c_o_mem = c_o_mem
+    if r_m_mem is not None:
+      self.r_m_mem = r_m_mem
+    if r_o_mem is not None:
+      self.r_o_mem = r_o_mem
     return None
   
   # helper to re-compute the decision boundaries
