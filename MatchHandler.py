@@ -1,6 +1,55 @@
-from texasholdem import TexasHoldEm
-from typing import Sequence
+from texasholdem import TexasHoldEm, Card, ActionType
+from typing import Optional, Sequence
 from PokerBot import PokerBot
+
+######################## MATCH HISTORY CLASS DEFINITION ########################
+
+class MatchHistory:
+  def __init__(self, num_players:int, buyin:int, big_blind:int,
+               small_blind:int):
+    self.num_players = num_players
+    self.buyin = buyin
+    self.big_blind = big_blind
+    self.small_blind = small_blind
+    self.hands = [] # HandHistory objects will be appended to this list
+    self.winner = None # will be set after match conclusion
+  
+  # TODO: WRITE METHODS FOR SETTING OTHER VALUES AFTER INSTANCIATION, SUCH AS
+  # ADDING HANDS, AND RECORDING THE WINNER OF THE MATCH. CONSIDER ADDING OTHER
+  # THINGS, TOO, IF YOU THINK THEY'D HELP.
+
+######################### HAND HISTORY CLASS DEFINITION ########################
+
+class HandHistory:
+  def __init__(self, match:MatchHistory, pockets:Sequence[Sequence[Card]],
+               chips_start:Sequence[int]):
+    # IMPORTANT: Notice how we're passing in a pointer to the MatchHistory
+    # object that will contain this instance. This will help users navigate the
+    # history objects, and allow for both upwards and downwards navigation of
+    # them.
+    self.match = match # the MatchHistory object that will contain this object
+    self.pockets = pockets # list of two-card lists, all players' pockets
+    self.chips_start = chips_start # for helping calculate chip differences
+    self.chips_end = None # will be set after hand conclusion
+    self.comm_cards = [] # Card objects will be appended to this list
+    self.preflop = [] # PlayerDecision objects will be appended to this list
+    self.flop = [] # PlayerDecision objects will be appended to this list
+    self.turn = [] # PlayerDecision objects will be appended to this list
+    self.river = [] # PlayerDecision objects will be appended to this list
+  
+  # TODO: WRITE METHODS FOR SETTING OTHER VALUES AFTER INSTANCIATION, SUCH AS
+  # ADDING DECISIONS TO EACH OF THE LISTS, AND RECORDING CHIP QUANTITIES AFTER
+  # THE HAND ENDS.
+
+####################### PLAYER DECISION CLASS DEFINITION #######################
+
+class PlayerDecision:
+  def __init__(self, hand:HandHistory, player_num:int, decision:ActionType,
+               amount:Optional[int] = None):
+    self.hand = hand # the HandHistory object that will contain this object
+    self.player_num = player_num
+    self.decision = decision
+    self.amount = amount # if decision is raise, records amount of raise
 
 ######################## MATCH HANDLER CLASS DEFINITION ########################
 
